@@ -1,10 +1,10 @@
 import axios, {AxiosResponse} from "axios";
 import {config} from "../config";
 import {Service} from "typedi";
-import {GetPicturesResponse} from "../UrlsController/GetPicturesResponse";
-import {GetPicturesRequest} from "../UrlsController/GetPicturesRequest";
 import {DateTime} from "luxon";
 import IUrlsCollectorService from "./IUrlsCollectorService";
+import {GetPicturesRequest} from "../models/GetPicturesRequest";
+import {GetPicturesResponse} from "../models/GetPicturesResponse";
 
 @Service()
 export class PicturesCollectorService implements IUrlsCollectorService{
@@ -13,7 +13,7 @@ export class PicturesCollectorService implements IUrlsCollectorService{
 	private maxConcurrentRequests: number = config.concurrentRequests;
 	getUrlsFromSource = async (request: GetPicturesRequest): Promise<GetPicturesResponse> => {
 		let collectedUrls: GetPicturesResponse = new GetPicturesResponse();
-		const requestsCollection = this.prepareRequestCollection(request.from, request.to);
+		const requestsCollection = this.prepareRequestCollection(request.from!, request.to!);
 
 		try {
 			for (let i = 0; i < requestsCollection.length; i += this.maxConcurrentRequests) {

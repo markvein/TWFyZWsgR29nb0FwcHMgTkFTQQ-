@@ -1,5 +1,6 @@
-import {GetPicturesRequest} from "../UrlsController/GetPicturesRequest";
-import {GetPicturesResponse} from "../UrlsController/GetPicturesResponse";
+import {GetPicturesRequest} from "../models/GetPicturesRequest";
+import {GetPicturesResponse} from "../models/GetPicturesResponse";
+
 
 export default interface IUrlsCollectorService {
 	getUrlsFromSource(request: GetPicturesRequest): Promise<GetPicturesResponse>;
