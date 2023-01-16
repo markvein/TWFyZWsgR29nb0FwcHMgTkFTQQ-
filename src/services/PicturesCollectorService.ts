@@ -1,16 +1,21 @@
 import axios, {AxiosResponse} from "axios";
 import {config} from "../config";
-import {Service} from "typedi";
+import {Inject, Service} from "typedi";
 import {DateTime} from "luxon";
 import IUrlsCollectorService from "./IUrlsCollectorService";
 import {GetPicturesRequest} from "../models/GetPicturesRequest";
 import {GetPicturesResponse} from "../models/GetPicturesResponse";
+import NasaApiHelper from "../helpers/NasaApiHelper";
 
 @Service()
-export class PicturesCollectorService implements IUrlsCollectorService{
+export class PicturesCollectorService implements IUrlsCollectorService {
 	private sourceBaseUrl: string = config.urlsSource;
 	private sourceApiKey: string = config.apiKey;
 	private maxConcurrentRequests: number = config.concurrentRequests;
+
+	constructor(@Inject() private readonly nasaApiHelper: NasaApiHelper) {
+	}
+
 	getUrlsFromSource = async (request: GetPicturesRequest): Promise<GetPicturesResponse> => {
 		let collectedUrls: GetPicturesResponse = new GetPicturesResponse();
 		const requestsCollection = this.prepareRequestCollection(request.from!, request.to!);
@@ -33,13 +38,12 @@ export class PicturesCollectorService implements IUrlsCollectorService{
 		let requestsCollection: Promise<AxiosResponse<any, any>>[] = [];
 
 		for (let currentDate = from; currentDate <= to; currentDate = currentDate.plus({day: 1})) {
-			const request = axios.get(this.sourceBaseUrl, {
+			const request = this.nasaApiHelper.nasaApiInstance.get(this.sourceBaseUrl, {
 				params: {
 					api_key: this.sourceApiKey,
 					date: currentDate.toISODate()
 				}
 			});
-
 			requestsCollection = [...requestsCollection, request];
 		}
 
